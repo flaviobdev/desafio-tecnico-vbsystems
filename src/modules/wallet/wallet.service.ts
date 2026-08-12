@@ -23,8 +23,16 @@ export class WalletService {
 
   async getTransactions(gatewayAccountId: string, query: GetTransactionsQueryDto) {
     const account = await this.getAccountOrFail(gatewayAccountId);
+    const response = await this.leraBox.getTransactions(account.token, query);
 
-    return this.leraBox.getTransactions(account.token, query);
+    return response.transactions.map((tx) => ({
+      id: tx.id,
+      type: tx.type,
+      status: tx.status,
+      amountCents: tx.amount,
+      description: tx.description,
+      createdAt: tx.createdAt,
+    }));
   }
 
   private async getAccountOrFail(gatewayAccountId: string): Promise<GatewayAccount> {
