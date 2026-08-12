@@ -61,6 +61,28 @@ export class LeraBoxService {
       throw new BadGatewayException('Não foi possível consultar a carteira no gateway');
     }
   }
+
+  async getTransactions(
+    token: string,
+    params: { limit?: string; status?: string; type?: string },
+  ): Promise<GatewayTransaction[]> {
+    try {
+      const response = await firstValueFrom(
+        this.http.get<GatewayTransaction[]>(`${this.baseUrl}/wallet/transactions`, {
+          headers: { Authorization: `Bearer ${token}` },
+          params,
+        }),
+      );
+
+      return response.data;
+    } catch (error) {
+      const err = error as AxiosError;
+      this.logger.error(
+        `Falha ao consultar extrato no gateway: ${err.response?.status} ${JSON.stringify(err.response?.data)}`,
+      );
+      throw new BadGatewayException('Não foi possível consultar o extrato de transações no gateway');
+    }
+  }
 }
 
 export type GatewayWallet = {
@@ -69,4 +91,12 @@ export type GatewayWallet = {
   balance: number;
   balanceFormatted: string;
   updatedAt: string;
+};
+
+export type GatewayTransaction = {
+  id: string;
+  amount: number;
+  status: string;
+  type: string;
+  createdAt: string;
 };

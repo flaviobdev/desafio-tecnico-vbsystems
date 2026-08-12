@@ -1,7 +1,8 @@
-import { Controller, Get, Req, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { Controller, Get, Query, Req, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard, type AuthenticatedRequest } from '../auth/jwt-auth.guard';
 import { WalletService } from './wallet.service';
+import { GetTransactionsQueryDto, TransactionStatus, TransactionType } from './dto/get-transactions-query.dto';
 
 @ApiTags('wallet')
 @ApiBearerAuth()
@@ -13,5 +14,13 @@ export class WalletController {
   @Get()
   getBalance(@Req() req: AuthenticatedRequest) {
     return this.walletService.getBalance(req.gatewayAccountId);
+  }
+
+  @Get('transactions')
+  @ApiQuery({ name: 'limit', required: false, example: 50 })
+  @ApiQuery({ name: 'status', required: false, enum: TransactionStatus })
+  @ApiQuery({ name: 'type', required: false, enum: TransactionType })
+  getTransactions(@Req() req: AuthenticatedRequest, @Query() query: GetTransactionsQueryDto) {
+    return this.walletService.getTransactions(req.gatewayAccountId, query);
   }
 }
