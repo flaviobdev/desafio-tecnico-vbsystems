@@ -1,0 +1,28 @@
+:root {
+  --color-ink: #16233a;
+  --color-ink-soft: #4b5768;
+  --color-paper: #f4f3eb;
+  --color-surface: #fbfaf5;
+  --color-stripe: #e7e9dd;
+  --color-hairline: #d8d6c8;
+  --color-pix: #00a99d;
+  --color-pix-ink: #00756c;
+  --color-red: #b23a2e;
+  --color-amber: #b8842a;
+
+  --font-display: 'Space Grotesk', 'Segoe UI', sans-serif;
+  --font-body: 'IBM Plex Sans', 'Segoe UI', sans-serif;
+  --font-mono: 'IBM Plex Mono', 'Consolas', monospace;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+
+  --radius: 3px;
+  --content-width: 1120px;
+}

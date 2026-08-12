@@ -1,0 +1,18 @@
+.withdrawals-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.withdrawals-form-card {
+  max-width: 420px;
+}
+
+.withdrawals-page h2 {
+  margin-bottom: var(--space-4);
+}
+
+.withdrawals-empty {
+  color: var(--color-ink-soft);
+  font-size: 14px;
+}

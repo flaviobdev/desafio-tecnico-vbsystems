@@ -1,0 +1,33 @@
+.login-screen {
+  min-height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-5);
+  background: radial-gradient(circle at top, var(--color-stripe) 0%, var(--color-paper) 55%);
+}
+
+.login-card {
+  width: 100%;
+  max-width: 380px;
+}
+
+.login-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-pix-ink);
+  margin: 0 0 var(--space-2);
+}
+
+.login-card h1 {
+  font-size: 22px;
+  margin-bottom: var(--space-2);
+}
+
+.login-sub {
+  color: var(--color-ink-soft);
+  font-size: 14px;
+  margin: 0 0 var(--space-5);
+}
