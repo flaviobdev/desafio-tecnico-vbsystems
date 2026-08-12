@@ -30,12 +30,13 @@ export class AuthService {
     if (!account) {
       account = this.gatewayAccountsRepository.create({ document: data.document });
     }
+    const user = await this.usersRepository.findOne({ where: { document: data.document } });
+
     account.token = token;
     account.codigoCliente = codigoCliente;
     account.chaveLoja = chaveLoja;
+    account.user = user ?? null;
     await this.gatewayAccountsRepository.save(account);
-
-    const user = await this.usersRepository.findOne({ where: { document: data.document } });
 
     const accessToken = await this.jwtService.signAsync({ sub: account.id, document: account.document });
 

@@ -1,5 +1,6 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { PersonType } from '../../gateway-integration/dto/create-gateway-user.dto';
+import { GatewayAccount } from '../../gateway-integration/entities/gateway-account.entity';
 
 @Entity('users')
 export class User {
@@ -44,6 +45,9 @@ export class User {
 
   @Column()
   state!: string;
+
+  @OneToOne(() => GatewayAccount, (account) => account.user, { nullable: true })
+  gatewayAccount!: GatewayAccount | null;
 
   @CreateDateColumn()
   createdAt!: Date;
