@@ -4,7 +4,6 @@ import { Request } from 'express';
 
 export type AuthenticatedRequest = Request & { gatewayAccountId: string };
 
-/** Protects merchant-facing routes: requires a valid Bearer JWT issued by our own /auth/login. */
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
   constructor(private readonly jwtService: JwtService) {}
@@ -13,7 +12,7 @@ export class JwtAuthGuard implements CanActivate {
     const request = context.switchToHttp().getRequest<AuthenticatedRequest>();
     const [type, token] = request.headers.authorization?.split(' ') ?? [];
     if (type !== 'Bearer' || !token) {
-      throw new UnauthorizedException('Token de acesso ausente.');
+      throw new UnauthorizedException('Está faltando o token de acesso no cabeçalho Authorization.');
     }
 
     try {
