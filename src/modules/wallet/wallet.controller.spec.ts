@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { WalletController } from './wallet.controller';
 import { WalletService } from './wallet.service';
-import { JwtAuthGuard, type AuthenticatedRequest } from '../auth/jwt-auth.guard';
+import { JwtAuthGuard, type AuthenticatedRequest } from '../../common/guards/jwt-auth.guard';
 
 describe('WalletController', () => {
   let controller: WalletController;

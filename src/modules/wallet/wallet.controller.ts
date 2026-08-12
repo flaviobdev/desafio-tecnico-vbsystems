@@ -1,6 +1,6 @@
 import { Controller, Get, Query, Req, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
-import { JwtAuthGuard, type AuthenticatedRequest } from '../auth/jwt-auth.guard';
+import { JwtAuthGuard, type AuthenticatedRequest } from '../../common/guards/jwt-auth.guard';
 import { WalletService } from './wallet.service';
 import { GetTransactionsQueryDto, TransactionStatus, TransactionType } from './dto/get-transactions-query.dto';
 
