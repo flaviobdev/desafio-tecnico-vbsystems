@@ -4,7 +4,7 @@ export type Balance = {
   balanceCents: number;
 };
 
-export type TransactionType = 'PIX' | 'CARD' | 'WITHDRAWAL';
+export type TransactionType = 'PIX' | 'CREDIT_CARD' | 'WITHDRAWAL';
 
 export type Transaction = {
   id: string;

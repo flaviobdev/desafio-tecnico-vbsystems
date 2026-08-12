@@ -20,13 +20,13 @@ const STATUS_OPTIONS: { value: TransactionStatus | 'ALL'; label: string }[] = [
 const TYPE_OPTIONS: { value: TransactionType | 'ALL'; label: string }[] = [
   { value: 'ALL', label: 'Todos os tipos' },
   { value: 'PIX', label: 'Pix' },
-  { value: 'CARD', label: 'Cartão' },
+  { value: 'CREDIT_CARD', label: 'Cartão' },
   { value: 'WITHDRAWAL', label: 'Saque' },
 ];
 
 const TYPE_LABEL: Record<TransactionType, string> = {
   PIX: 'Pix',
-  CARD: 'Cartão',
+  CREDIT_CARD: 'Cartão',
   WITHDRAWAL: 'Saque',
 };
 

@@ -1,12 +1,19 @@
 import { apiFetch } from '../../lib/api-client';
-import { CheckoutResult, CreateCheckoutPayload, Fee } from './types';
+import { CardCharge, CreateCardChargePayload, CreatePixChargePayload, Fee, PixCharge } from './types';
 
-export function getFees(): Promise<Fee[]> {
-  return apiFetch<Fee[]>('/fees');
+export function getFees(brand: string): Promise<{ total: number; fees: Fee[] }> {
+  return apiFetch(`/checkout/fees?brand=${encodeURIComponent(brand)}`);
 }
 
-export function createCheckout(payload: CreateCheckoutPayload): Promise<CheckoutResult> {
-  return apiFetch<CheckoutResult>('/checkout', {
+export function createPixCharge(payload: CreatePixChargePayload): Promise<PixCharge> {
+  return apiFetch<PixCharge>('/checkout/pix', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+export function createCardCharge(payload: CreateCardChargePayload): Promise<CardCharge> {
+  return apiFetch<CardCharge>('/checkout/card', {
     method: 'POST',
     body: JSON.stringify(payload),
   });
