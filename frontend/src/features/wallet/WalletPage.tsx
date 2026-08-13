@@ -1,6 +1,8 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Card } from '../../components/Card';
 import { ErrorBanner } from '../../components/ErrorBanner';
+import { Pagination } from '../../components/Pagination';
 import { Spinner } from '../../components/Spinner';
 import { StatusStamp, TransactionStatus } from '../../components/StatusStamp';
 import { useAsync } from '../../hooks/useAsync';
@@ -32,8 +34,14 @@ const TYPE_LABEL: Record<TransactionType, string> = {
 
 export function WalletPage() {
   const [filters, setFilters] = useState<TransactionFilters>({ status: 'ALL', type: 'ALL' });
+  const [page, setPage] = useState(1);
   const balance = useAsync(getBalance, []);
-  const transactions = useAsync(() => getTransactions(filters), [filters.status, filters.type]);
+  const transactions = useAsync(() => getTransactions(filters, page), [filters.status, filters.type, page]);
+
+  function updateFilters(next: Partial<TransactionFilters>) {
+    setFilters((f) => ({ ...f, ...next }));
+    setPage(1);
+  }
 
   return (
     <div className="wallet-page">
@@ -52,20 +60,14 @@ export function WalletPage() {
         <div className="wallet-toolbar">
           <h2>Extrato</h2>
           <div className="wallet-filters">
-            <select
-              value={filters.status}
-              onChange={(e) => setFilters((f) => ({ ...f, status: e.target.value as TransactionFilters['status'] }))}
-            >
+            <select value={filters.status} onChange={(e) => updateFilters({ status: e.target.value as TransactionFilters['status'] })}>
               {STATUS_OPTIONS.map((opt) => (
                 <option key={opt.value} value={opt.value}>
                   {opt.label}
                 </option>
               ))}
             </select>
-            <select
-              value={filters.type}
-              onChange={(e) => setFilters((f) => ({ ...f, type: e.target.value as TransactionFilters['type'] }))}
-            >
+            <select value={filters.type} onChange={(e) => updateFilters({ type: e.target.value as TransactionFilters['type'] })}>
               {TYPE_OPTIONS.map((opt) => (
                 <option key={opt.value} value={opt.value}>
                   {opt.label}
@@ -77,10 +79,10 @@ export function WalletPage() {
 
         {transactions.loading && <Spinner />}
         {transactions.error && <ErrorBanner message={transactions.error} />}
-        {transactions.data && transactions.data.length === 0 && (
+        {transactions.data && transactions.data.data.length === 0 && (
           <p className="wallet-empty">Nenhuma movimentação para os filtros selecionados.</p>
         )}
-        {transactions.data && transactions.data.length > 0 && (
+        {transactions.data && transactions.data.data.length > 0 && (
           <table className="ledger-table">
             <thead>
               <tr>
@@ -89,10 +91,11 @@ export function WalletPage() {
                 <th>Tipo</th>
                 <th>Status</th>
                 <th className="ledger-table-amount">Valor</th>
+                <th />
               </tr>
             </thead>
             <tbody>
-              {transactions.data.map((tx) => (
+              {transactions.data.data.map((tx) => (
                 <tr key={tx.id}>
                   <td className="mono">{new Date(tx.createdAt).toLocaleDateString('pt-BR')}</td>
                   <td>{tx.description}</td>
@@ -101,10 +104,20 @@ export function WalletPage() {
                     <StatusStamp status={tx.status} />
                   </td>
                   <td className="ledger-table-amount money">{centsToBRL(tx.amountCents)}</td>
+                  <td>
+                    {tx.orderId && tx.status === 'APPROVED' && (
+                      <Link to={`/checkout/${tx.orderId}/comprovante`} target="_blank">
+                        Comprovante
+                      </Link>
+                    )}
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
+        )}
+        {transactions.data && (
+          <Pagination page={transactions.data.page} totalPages={transactions.data.totalPages} onPageChange={setPage} />
         )}
       </Card>
     </div>

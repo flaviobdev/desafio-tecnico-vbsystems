@@ -13,6 +13,7 @@ export type Transaction = {
   amountCents: number;
   description: string;
   createdAt: string;
+  orderId: string | null;
 };
 
 export type TransactionFilters = {
