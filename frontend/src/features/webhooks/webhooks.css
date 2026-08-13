@@ -1,0 +1,19 @@
+.webhooks-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.webhooks-form-card {
+  max-width: 480px;
+}
+
+.webhooks-page h2 {
+  margin-bottom: var(--space-2);
+}
+
+.webhooks-hint {
+  color: var(--color-ink-soft);
+  font-size: 14px;
+  margin-bottom: var(--space-4);
+}
