@@ -165,3 +165,16 @@
   color: var(--color-ink-soft);
   margin: 0 0 var(--space-4);
 }
+
+.ui-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  margin-top: var(--space-4);
+}
+
+.ui-pagination-status {
+  font-size: 13px;
+  color: var(--color-ink-soft);
+}
