@@ -1,4 +1,5 @@
-import { IsIn, IsOptional, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsIn, IsInt, IsOptional, Min } from 'class-validator';
 
 export enum TransactionStatus {
   PENDING = 'PENDING',
@@ -16,14 +17,16 @@ export enum TransactionType {
 
 export class GetTransactionsQueryDto {
   @IsOptional()
-  @IsString()
-  limit?: string;
-
-  @IsOptional()
   @IsIn(Object.values(TransactionStatus))
   status?: TransactionStatus;
 
   @IsOptional()
   @IsIn(Object.values(TransactionType))
   type?: TransactionType;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  page?: number = 1;
 }

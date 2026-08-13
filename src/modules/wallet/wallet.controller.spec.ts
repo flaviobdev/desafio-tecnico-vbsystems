@@ -1,7 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { WalletController } from './wallet.controller';
 import { WalletService } from './wallet.service';
-import { JwtAuthGuard, type AuthenticatedRequest } from '../../common/guards/jwt-auth.guard';
+import {
+  JwtAuthGuard,
+  type AuthenticatedRequest,
+} from '../../common/guards/jwt-auth.guard';
 
 describe('WalletController', () => {
   let controller: WalletController;
@@ -26,12 +29,18 @@ describe('WalletController', () => {
   });
 
   it('resolves the balance for the authenticated gateway account', async () => {
-    walletService.getBalance.mockResolvedValue({ balanceCents: 1050, updatedAt: '2026-08-12T03:17:55.773Z' });
+    walletService.getBalance.mockResolvedValue({
+      balanceCents: 1050,
+      updatedAt: '2026-08-12T03:17:55.773Z',
+    });
     const req = { gatewayAccountId: 'acc-1' } as AuthenticatedRequest;
 
     const result = await controller.getBalance(req);
 
     expect(walletService.getBalance).toHaveBeenCalledWith('acc-1');
-    expect(result).toEqual({ balanceCents: 1050, updatedAt: '2026-08-12T03:17:55.773Z' });
+    expect(result).toEqual({
+      balanceCents: 1050,
+      updatedAt: '2026-08-12T03:17:55.773Z',
+    });
   });
 });
