@@ -61,6 +61,13 @@ export class Order {
   @Column({ type: 'varchar', nullable: true })
   gatewayTransactionId!: string | null;
 
+  // Só o Pix tem esse segundo id: a Lera Box devolve `txid` (usado em GET /payments/:id
+  // e nos webhooks) e um `id` interno diferente, que é o mesmo id usado no extrato da
+  // carteira (GET /wallet/transactions). Guardamos os dois pra poder linkar o extrato
+  // ao comprovante do pedido local.
+  @Column({ type: 'varchar', nullable: true })
+  walletTransactionId!: string | null;
+
   @Column({ type: 'text', nullable: true })
   emv!: string | null;
 
