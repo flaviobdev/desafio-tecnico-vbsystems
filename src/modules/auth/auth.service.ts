@@ -4,6 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { LeraBoxService } from '../gateway-integration/lera-box.service';
 import { LoginGatewayDto } from '../gateway-integration/dto/login-gateway-dto.dto';
+import { ResetPasswordGatewayDto } from '../gateway-integration/dto/reset-password-gateway.dto';
 import { GatewayAccount } from '../gateway-integration/entities/gateway-account.entity';
 import { User } from '../users/entities/user.entity';
 
@@ -54,5 +55,9 @@ export class AuthService {
         document: account.document,
       },
     };
+  }
+
+  async resetPassword(data: ResetPasswordGatewayDto) {
+    return this.leraBox.resetPassword(data);
   }
 }

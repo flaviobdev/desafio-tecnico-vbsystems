@@ -8,7 +8,7 @@ import { User } from '../users/entities/user.entity';
 
 describe('AuthService', () => {
   let service: AuthService;
-  let leraBox: { loginUser: jest.Mock };
+  let leraBox: { loginUser: jest.Mock; resetPassword: jest.Mock };
   let jwtService: { signAsync: jest.Mock };
   let gatewayAccountsRepository: {
     findOne: jest.Mock;
@@ -18,7 +18,7 @@ describe('AuthService', () => {
   let usersRepository: { findOne: jest.Mock };
 
   beforeEach(async () => {
-    leraBox = { loginUser: jest.fn() };
+    leraBox = { loginUser: jest.fn(), resetPassword: jest.fn() };
     jwtService = { signAsync: jest.fn() };
     gatewayAccountsRepository = {
       findOne: jest.fn(),
@@ -131,5 +131,26 @@ describe('AuthService', () => {
 
     expect(JSON.stringify(result)).not.toContain('super-secret');
     expect(JSON.stringify(result)).not.toContain('secret');
+  });
+
+  describe('resetPassword', () => {
+    it('delegates straight to the gateway, with no local side effects', async () => {
+      leraBox.resetPassword.mockResolvedValue({
+        success: true,
+        statusCode: 201,
+      });
+
+      const result = await service.resetPassword({
+        document: '12345678901',
+        email: 'fulano@example.com',
+      });
+
+      expect(leraBox.resetPassword).toHaveBeenCalledWith({
+        document: '12345678901',
+        email: 'fulano@example.com',
+      });
+      expect(result).toEqual({ success: true, statusCode: 201 });
+      expect(gatewayAccountsRepository.save).not.toHaveBeenCalled();
+    });
   });
 });

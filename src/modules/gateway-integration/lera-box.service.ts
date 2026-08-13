@@ -8,6 +8,7 @@ import { PixGatewayPaymentsDto } from './dto/create-pix-payments-gateway.dto';
 import { CardGatewayPaymentsDto } from './dto/create-card-payments-gateway.dto';
 import { CreateWithdrawGatewayDto } from './dto/create-withdraw-gateway.dto';
 import { CreateWebhookGatewayDto } from './dto/create-webhook-gateway.dto';
+import { ResetPasswordGatewayDto } from './dto/reset-password-gateway.dto';
 import { toGatewayException } from '../../common/errors/gateway-error.util';
 
 @Injectable()
@@ -51,6 +52,25 @@ export class LeraBoxService {
       throw toGatewayException(
         error,
         'Não foi possível logar o usuário no gateway',
+      );
+    }
+  }
+
+  async resetPassword(data: ResetPasswordGatewayDto) {
+    try {
+      const response = await firstValueFrom(
+        this.http.post(`${this.baseUrl}/auth/reset-password`, data),
+      );
+
+      return { success: true, statusCode: response.status };
+    } catch (error) {
+      const err = error as AxiosError;
+      this.logger.error(
+        `Falha ao resetar senha no gateway: ${err.response?.status} ${JSON.stringify(err.response?.data)}`,
+      );
+      throw toGatewayException(
+        error,
+        'Não foi possível resetar a senha no gateway',
       );
     }
   }
