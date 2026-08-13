@@ -27,10 +27,30 @@ docker compose up -d --build
 
 O container da API sobe com `NODE_ENV=development` de propósito — como
 ainda não há migrations, é o `synchronize: true` do TypeORM que cria as
-tabelas, e isso fica desligado em `NODE_ENV=production`. O frontend é
-buildado com `VITE_API_URL` apontando pra API do host (`localhost:3000`
-por padrão); pra apontar pra outro endereço, defina `VITE_API_URL` antes
-do `up` (ele é lido como build arg do serviço `frontend`).
+tabelas, e isso fica desligado em `NODE_ENV=production`.
+
+### Trocar a URL da API entre local e VPS
+
+O frontend é buildado com `VITE_API_URL` apontando pra API — por padrão
+`http://localhost:3000/api`. Pra apontar pra uma URL pública (VPS com
+domínio/HTTPS, por exemplo `https://baas.pousadaos.com.br/api`), copie
+`.env.example` pra `.env` na raiz do repo e troque essa variável:
+
+```bash
+cp .env.example .env
+# edite VITE_API_URL no .env
+docker compose up -d --build frontend
+```
+
+O `docker compose` já lê o `.env` da raiz sozinho, então não precisa
+exportar nada na mão. Sem esse `.env`, cai no padrão de
+`localhost:3000/api`.
+
+Rodando o frontend sem Docker (`npm run build` dentro de `frontend/`),
+quem decide a URL é o próprio Vite: `frontend/.env.production` (commitado,
+já aponta pra `https://baas.pousadaos.com.br/api`) é usado em builds de
+produção, e `frontend/.env` (local, a partir do `.env.example`) em
+desenvolvimento.
 
 ## Setup local (sem Docker para API/frontend)
 
