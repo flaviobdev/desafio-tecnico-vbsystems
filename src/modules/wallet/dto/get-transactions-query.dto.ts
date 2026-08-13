@@ -1,3 +1,4 @@
+import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsIn, IsInt, IsOptional, Min } from 'class-validator';
 
@@ -16,14 +17,27 @@ export enum TransactionType {
 }
 
 export class GetTransactionsQueryDto {
+  @ApiPropertyOptional({
+    enum: TransactionStatus,
+    description: 'Filtra o extrato por status',
+  })
   @IsOptional()
   @IsIn(Object.values(TransactionStatus))
   status?: TransactionStatus;
 
+  @ApiPropertyOptional({
+    enum: TransactionType,
+    description: 'Filtra o extrato por tipo de transação',
+  })
   @IsOptional()
   @IsIn(Object.values(TransactionType))
   type?: TransactionType;
 
+  @ApiPropertyOptional({
+    description: 'Página do extrato (10 itens por página)',
+    example: 1,
+    default: 1,
+  })
   @IsOptional()
   @Type(() => Number)
   @IsInt()
