@@ -1,0 +1,9 @@
+.signup-card {
+  max-width: 480px;
+}
+
+.signup-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+}

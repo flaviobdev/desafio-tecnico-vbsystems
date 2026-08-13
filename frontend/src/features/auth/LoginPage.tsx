@@ -107,6 +107,12 @@ export function LoginPage() {
         >
           <Link to="/esqueci-senha">Esqueci minha senha</Link>
         </p>
+        <p
+          className="login-sub"
+          style={{ marginTop: 'var(--space-2)', marginBottom: 0 }}
+        >
+          Ainda não tem conta? <Link to="/cadastro">Criar conta</Link>
+        </p>
       </Card>
     </div>
   );

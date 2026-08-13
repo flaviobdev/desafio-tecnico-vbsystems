@@ -8,6 +8,7 @@ import { ReceiptPage } from './features/checkout/ReceiptPage';
 import { WalletPage } from './features/wallet/WalletPage';
 import { WebhooksPage } from './features/webhooks/WebhooksPage';
 import { WithdrawalsPage } from './features/withdrawals/WithdrawalsPage';
+import { SignupPage } from './features/users/SignupPage';
 import { AppShell } from './layout/AppShell';
 
 export function App() {
@@ -15,6 +16,7 @@ export function App() {
     <AuthProvider>
       <Routes>
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/cadastro" element={<SignupPage />} />
         <Route path="/esqueci-senha" element={<ResetPasswordPage />} />
         <Route element={<ProtectedRoute />}>
           <Route path="/checkout/:id/comprovante" element={<ReceiptPage />} />
