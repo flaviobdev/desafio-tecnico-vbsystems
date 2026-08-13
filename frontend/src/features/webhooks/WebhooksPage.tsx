@@ -106,30 +106,32 @@ export function WebhooksPage() {
         {error && <ErrorBanner message={error} />}
         {webhooks && webhooks.data.length === 0 && <p className="webhooks-hint">Nenhum webhook configurado.</p>}
         {webhooks && webhooks.data.length > 0 && (
-          <table className="ledger-table">
-            <thead>
-              <tr>
-                <th>Evento</th>
-                <th>URL</th>
-                <th>Status</th>
-                <th />
-              </tr>
-            </thead>
-            <tbody>
-              {webhooks.data.map((hook) => (
-                <tr key={hook.id}>
-                  <td className="mono">{hook.event}</td>
-                  <td className="mono">{hook.url}</td>
-                  <td>{hook.active ? 'Ativo' : 'Inativo'}</td>
-                  <td>
-                    <Button variant="secondary" loading={removingId === hook.id} onClick={() => remove(hook.id)}>
-                      Remover
-                    </Button>
-                  </td>
+          <div className="table-scroll">
+            <table className="ledger-table">
+              <thead>
+                <tr>
+                  <th>Evento</th>
+                  <th>URL</th>
+                  <th>Status</th>
+                  <th />
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {webhooks.data.map((hook) => (
+                  <tr key={hook.id}>
+                    <td className="mono">{hook.event}</td>
+                    <td className="mono">{hook.url}</td>
+                    <td>{hook.active ? 'Ativo' : 'Inativo'}</td>
+                    <td>
+                      <Button variant="secondary" loading={removingId === hook.id} onClick={() => remove(hook.id)}>
+                        Remover
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
         {webhooks && <Pagination page={webhooks.page} totalPages={webhooks.totalPages} onPageChange={setPage} />}
       </Card>

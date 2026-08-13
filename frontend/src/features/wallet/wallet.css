@@ -20,9 +20,10 @@
 
 .wallet-balance {
   font-family: var(--font-mono);
-  font-size: 48px;
+  font-size: clamp(28px, 9vw, 48px);
   font-weight: 500;
   margin: 0;
+  overflow-wrap: anywhere;
 }
 
 .wallet-toolbar {
@@ -36,10 +37,12 @@
 
 .wallet-filters {
   display: flex;
+  flex-wrap: wrap;
   gap: var(--space-2);
 }
 
 .wallet-filters select {
+  flex: 1 1 160px;
   border: 1px solid var(--color-hairline);
   border-radius: var(--radius);
   padding: 8px 10px;

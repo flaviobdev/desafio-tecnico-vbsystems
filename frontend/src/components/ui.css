@@ -131,8 +131,23 @@
   color: var(--color-ink-soft);
 }
 
+.table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin: 0 calc(var(--space-5) * -1);
+  padding: 0 var(--space-5);
+}
+
+@media (max-width: 640px) {
+  .table-scroll {
+    margin: 0 calc(var(--space-4) * -1);
+    padding: 0 var(--space-4);
+  }
+}
+
 .ledger-table {
   width: 100%;
+  min-width: 620px;
   border-collapse: collapse;
   font-size: 14px;
 }

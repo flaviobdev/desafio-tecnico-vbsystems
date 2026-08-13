@@ -89,55 +89,57 @@ export function WalletPage() {
           <p className="wallet-empty">Nenhuma movimentação para os filtros selecionados.</p>
         )}
         {transactions.data && transactions.data.data.length > 0 && (
-          <table className="ledger-table">
-            <thead>
-              <tr>
-                <th>Data</th>
-                <th>Descrição</th>
-                <th>Tipo</th>
-                <th>Status</th>
-                <th className="ledger-table-amount">Valor</th>
-                <th />
-              </tr>
-            </thead>
-            <tbody>
-              {transactions.data.data.map((tx) => (
-                <tr key={tx.id}>
-                  <td className="mono">{new Date(tx.createdAt).toLocaleDateString('pt-BR')}</td>
-                  <td>{tx.description}</td>
-                  <td>{TYPE_LABEL[tx.type]}</td>
-                  <td>
-                    <StatusStamp status={tx.status} />
-                  </td>
-                  <td className="ledger-table-amount money">{centsToBRL(tx.amountCents)}</td>
-                  <td>
-                    {tx.orderId && tx.status === 'APPROVED' && (
-                      <div className="wallet-row-actions">
-                        <Link to={`/checkout/${tx.orderId}/comprovante`} target="_blank">
-                          Comprovante
-                        </Link>
-                        <a
-                          href={whatsAppShareUrl(buildReceiptShareMessage(tx.orderId, tx.type, tx.amountCents))}
-                          target="_blank"
-                          rel="noreferrer"
-                        >
-                          WhatsApp
-                        </a>
-                        <a
-                          href={mailtoUrl(
-                            'Comprovante de pagamento',
-                            buildReceiptShareMessage(tx.orderId, tx.type, tx.amountCents),
-                          )}
-                        >
-                          E-mail
-                        </a>
-                      </div>
-                    )}
-                  </td>
+          <div className="table-scroll">
+            <table className="ledger-table">
+              <thead>
+                <tr>
+                  <th>Data</th>
+                  <th>Descrição</th>
+                  <th>Tipo</th>
+                  <th>Status</th>
+                  <th className="ledger-table-amount">Valor</th>
+                  <th />
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {transactions.data.data.map((tx) => (
+                  <tr key={tx.id}>
+                    <td className="mono">{new Date(tx.createdAt).toLocaleDateString('pt-BR')}</td>
+                    <td>{tx.description}</td>
+                    <td>{TYPE_LABEL[tx.type]}</td>
+                    <td>
+                      <StatusStamp status={tx.status} />
+                    </td>
+                    <td className="ledger-table-amount money">{centsToBRL(tx.amountCents)}</td>
+                    <td>
+                      {tx.orderId && tx.status === 'APPROVED' && (
+                        <div className="wallet-row-actions">
+                          <Link to={`/checkout/${tx.orderId}/comprovante`} target="_blank">
+                            Comprovante
+                          </Link>
+                          <a
+                            href={whatsAppShareUrl(buildReceiptShareMessage(tx.orderId, tx.type, tx.amountCents))}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            WhatsApp
+                          </a>
+                          <a
+                            href={mailtoUrl(
+                              'Comprovante de pagamento',
+                              buildReceiptShareMessage(tx.orderId, tx.type, tx.amountCents),
+                            )}
+                          >
+                            E-mail
+                          </a>
+                        </div>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
         {transactions.data && (
           <Pagination page={transactions.data.page} totalPages={transactions.data.totalPages} onPageChange={setPage} />
