@@ -66,6 +66,15 @@
   margin-bottom: var(--space-4);
 }
 
+.checkout-pending-hint {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-ink-soft);
+  font-size: 13px;
+  margin-bottom: var(--space-4);
+}
+
 .checkout-qr {
   width: 200px;
   height: 200px;
@@ -85,4 +94,12 @@
   border-radius: var(--radius);
   padding: 10px 12px;
   min-width: 0;
+}
+
+.checkout-receipt-link {
+  display: inline-block;
+  margin-top: var(--space-4);
+  color: var(--color-pix-ink);
+  font-weight: 600;
+  font-size: 14px;
 }

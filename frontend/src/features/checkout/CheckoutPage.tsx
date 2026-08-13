@@ -2,6 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { QRCodeSVG } from 'qrcode.react';
+import { Link } from 'react-router-dom';
 import { z } from 'zod';
 import { Button } from '../../components/Button';
 import { Card } from '../../components/Card';
@@ -10,7 +11,7 @@ import { Spinner } from '../../components/Spinner';
 import { StatusStamp } from '../../components/StatusStamp';
 import { ApiError } from '../../lib/api-client';
 import { centsToBRL, reaisToCents } from '../../lib/money';
-import { createCardCharge, createPixCharge, getFees } from './api';
+import { createCardCharge, createPixCharge, getCharge, getFees } from './api';
 import { CardPreview } from './CardPreview';
 import { detectCardBrand } from './card-brand';
 import { Charge, Fee } from './types';
@@ -84,6 +85,16 @@ export function CheckoutPage() {
   }, [brand]);
 
   const selectedFee = fees?.find((f) => f.installments === Number(installments));
+
+  useEffect(() => {
+    if (!charge || charge.status !== 'PENDING') return;
+    const interval = setInterval(() => {
+      getCharge(charge.id)
+        .then(setCharge)
+        .catch(() => {});
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [charge?.id, charge?.status]);
 
   async function onSubmit(values: FormValues) {
     setSubmitError(null);
@@ -249,6 +260,11 @@ export function CheckoutPage() {
           <h3>
             Cobrança Pix gerada <StatusStamp status={charge.status} />
           </h3>
+          {charge.status === 'PENDING' && (
+            <p className="checkout-pending-hint">
+              <Spinner /> Aguardando confirmação do pagamento...
+            </p>
+          )}
           {charge.emv && (
             <>
               <div className="checkout-qr">
@@ -264,6 +280,11 @@ export function CheckoutPage() {
                 </div>
               </div>
             </>
+          )}
+          {charge.status === 'APPROVED' && (
+            <Link className="checkout-receipt-link" to={`/checkout/${charge.id}/comprovante`} target="_blank">
+              Ver comprovante de pagamento →
+            </Link>
           )}
         </Card>
       )}
@@ -285,6 +306,11 @@ export function CheckoutPage() {
             <dt>Valor líquido</dt>
             <dd>{charge.netAmountCents != null ? centsToBRL(charge.netAmountCents) : '—'}</dd>
           </dl>
+          {charge.status === 'APPROVED' && (
+            <Link className="checkout-receipt-link" to={`/checkout/${charge.id}/comprovante`} target="_blank">
+              Ver comprovante de pagamento →
+            </Link>
+          )}
         </Card>
       )}
       </div>
