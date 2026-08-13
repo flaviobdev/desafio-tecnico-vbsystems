@@ -139,6 +139,10 @@ export function CheckoutPage() {
     }
   }
 
+  function buildPixShareMessage(pixCharge: Extract<Charge, { method: 'PIX' }>) {
+    return `Pagamento Pix de ${centsToBRL(pixCharge.amount)}. Código copia e cola:\n${pixCharge.emv}`;
+  }
+
   async function copyEmv(code: string) {
     await navigator.clipboard.writeText(code);
     setCopied(true);
@@ -314,6 +318,22 @@ export function CheckoutPage() {
                     {copied ? 'Copiado!' : 'Copiar'}
                   </Button>
                 </div>
+              </div>
+              <div className="checkout-share-row">
+                <a
+                  className="ui-btn ui-btn--secondary"
+                  href={`https://wa.me/?text=${encodeURIComponent(buildPixShareMessage(charge))}`}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Enviar por WhatsApp
+                </a>
+                <a
+                  className="ui-btn ui-btn--secondary"
+                  href={`mailto:?subject=${encodeURIComponent('Pagamento Pix')}&body=${encodeURIComponent(buildPixShareMessage(charge))}`}
+                >
+                  Enviar por e-mail
+                </a>
               </div>
             </>
           )}
