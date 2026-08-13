@@ -1,4 +1,9 @@
-import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  CanActivate,
+  ExecutionContext,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 
@@ -12,7 +17,9 @@ export class JwtAuthGuard implements CanActivate {
     const request = context.switchToHttp().getRequest<AuthenticatedRequest>();
     const [type, token] = request.headers.authorization?.split(' ') ?? [];
     if (type !== 'Bearer' || !token) {
-      throw new UnauthorizedException('Está faltando o token de acesso no cabeçalho Authorization.');
+      throw new UnauthorizedException(
+        'Está faltando o token de acesso no cabeçalho Authorization.',
+      );
     }
 
     try {

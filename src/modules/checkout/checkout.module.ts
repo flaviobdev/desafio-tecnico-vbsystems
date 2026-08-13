@@ -7,8 +7,12 @@ import { GatewayIntegrationModule } from '../gateway-integration/gateway-integra
 import { Order } from './entities/order.entity';
 
 @Module({
-  imports: [GatewayIntegrationModule, AuthModule, TypeOrmModule.forFeature([Order])],
+  imports: [
+    GatewayIntegrationModule,
+    AuthModule,
+    TypeOrmModule.forFeature([Order]),
+  ],
   providers: [CheckoutService],
-  controllers: [CheckoutController]
+  controllers: [CheckoutController],
 })
 export class CheckoutModule {}

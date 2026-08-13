@@ -1,4 +1,10 @@
-import { Column, CreateDateColumn, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { PersonType } from '../../gateway-integration/dto/create-gateway-user.dto';
 import { GatewayAccount } from '../../gateway-integration/entities/gateway-account.entity';
 
