@@ -59,4 +59,11 @@ export class CheckoutController {
   ) {
     return this.checkoutService.getOrderById(req.gatewayAccountId, id);
   }
+
+  @Post(':id/cancel')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  async cancelOrder(@Req() req: AuthenticatedRequest, @Param('id') id: string) {
+    return this.checkoutService.cancelOrder(req.gatewayAccountId, id);
+  }
 }

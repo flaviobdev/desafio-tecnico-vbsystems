@@ -12,7 +12,7 @@ import { StatusStamp } from '../../components/StatusStamp';
 import { ApiError } from '../../lib/api-client';
 import { cleanDocument, isValidDocumentValue, maskDocument } from '../../lib/document';
 import { centsToBRL, reaisToCents } from '../../lib/money';
-import { createCardCharge, createPixCharge, getCharge, getFees } from './api';
+import { cancelCharge, createCardCharge, createPixCharge, getCharge, getFees } from './api';
 import { CardPreview } from './CardPreview';
 import { detectCardBrand } from './card-brand';
 import { Charge, Fee } from './types';
@@ -53,6 +53,7 @@ export function CheckoutPage() {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [cvvFocused, setCvvFocused] = useState(false);
+  const [canceling, setCanceling] = useState(false);
 
   const {
     register,
@@ -142,6 +143,18 @@ export function CheckoutPage() {
     await navigator.clipboard.writeText(code);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  }
+
+  async function handleCancel() {
+    if (!charge) return;
+    setCanceling(true);
+    try {
+      setCharge(await cancelCharge(charge.id));
+    } catch (err) {
+      setSubmitError(err instanceof ApiError ? err.message : 'Não foi possível cancelar a cobrança.');
+    } finally {
+      setCanceling(false);
+    }
   }
 
   return (
@@ -274,9 +287,19 @@ export function CheckoutPage() {
             Cobrança Pix gerada <StatusStamp status={charge.status} />
           </h3>
           {charge.status === 'PENDING' && (
-            <p className="checkout-pending-hint">
-              <Spinner /> Aguardando confirmação do pagamento...
-            </p>
+            <>
+              <p className="checkout-pending-hint">
+                <Spinner /> Aguardando confirmação do pagamento...
+              </p>
+              {charge.expiresAt && (
+                <p className="checkout-fee-preview">
+                  Expira às {new Date(charge.expiresAt).toLocaleTimeString('pt-BR')}
+                </p>
+              )}
+              <Button type="button" variant="secondary" loading={canceling} onClick={handleCancel}>
+                Cancelar cobrança
+              </Button>
+            </>
           )}
           {charge.emv && (
             <>

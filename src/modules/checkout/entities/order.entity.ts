@@ -89,6 +89,12 @@ export class Order {
   @Column({ type: 'json', nullable: true })
   gatewayResponse!: unknown | null;
 
+  // Só o Pix usa isso: enquanto o QR/copia-e-cola não é pago, o link expira depois de
+  // um tempo (ver EXPIRY_MINUTES em checkout.service.ts). Cartão resolve na hora, nunca
+  // fica PENDING esperando expirar.
+  @Column({ type: 'datetime', nullable: true })
+  expiresAt!: Date | null;
+
   @CreateDateColumn()
   createdAt!: Date;
 

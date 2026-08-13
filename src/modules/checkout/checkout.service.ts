@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { LeraBoxService } from '../gateway-integration/lera-box.service';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -6,6 +11,8 @@ import { GatewayAccount } from '../gateway-integration/entities/gateway-account.
 import { PixGatewayPaymentsDto } from '../gateway-integration/dto/create-pix-payments-gateway.dto';
 import { CardGatewayPaymentsDto } from '../gateway-integration/dto/create-card-payments-gateway.dto';
 import { Order, OrderMethod, OrderStatus } from './entities/order.entity';
+
+const PIX_EXPIRY_MINUTES = 30;
 
 @Injectable()
 export class CheckoutService {
@@ -44,6 +51,7 @@ export class CheckoutService {
       gatewayTransactionId: gatewayResponse.txid,
       walletTransactionId: gatewayResponse.id,
       emv: gatewayResponse.emv,
+      expiresAt: new Date(Date.now() + PIX_EXPIRY_MINUTES * 60_000),
       gatewayResponse,
     });
 
@@ -66,6 +74,18 @@ export class CheckoutService {
 
     if (!gatewayAccount) {
       throw new NotFoundException('Conta do gateway não encontrada');
+    }
+
+    const { fees } = await this.leraBox.getFees();
+    const isKnownFee = fees.some(
+      (fee) =>
+        fee.installments === data.installments &&
+        fee.feePercent === data.feePercent,
+    );
+    if (!isKnownFee) {
+      throw new BadRequestException(
+        'A taxa informada não corresponde à tabela de taxas vigente.',
+      );
     }
 
     const gatewayResponse = await this.leraBox.createCardPayment(
@@ -112,6 +132,16 @@ export class CheckoutService {
       throw new NotFoundException('Pagamento não encontrado');
     }
 
+    if (
+      order.status === OrderStatus.PENDING &&
+      order.expiresAt &&
+      order.expiresAt.getTime() < Date.now()
+    ) {
+      order.status = OrderStatus.EXPIRED;
+      await this.ordersRepository.save(order);
+      return this.toResponse(order);
+    }
+
     // O status definitivo deve vir do webhook (ver WebhooksService.handleCallback).
     // Só reconsultamos o gateway aqui enquanto ainda está PENDING, como um fallback
     // pra quando o webhook não está configurado/não chegou — nunca sobrescrevemos um
@@ -131,6 +161,27 @@ export class CheckoutService {
     return this.toResponse(order);
   }
 
+  async cancelOrder(gatewayAccountId: string, orderId: string) {
+    const order = await this.ordersRepository.findOne({
+      where: { id: orderId, gatewayAccount: { id: gatewayAccountId } },
+    });
+
+    if (!order) {
+      throw new NotFoundException('Pagamento não encontrado');
+    }
+
+    if (order.status !== OrderStatus.PENDING) {
+      throw new ConflictException(
+        'Só é possível cancelar cobranças ainda pendentes.',
+      );
+    }
+
+    order.status = OrderStatus.CANCELLED;
+    const saved = await this.ordersRepository.save(order);
+
+    return this.toResponse(saved);
+  }
+
   private toResponse(order: Order) {
     return {
       id: order.id,
@@ -148,6 +199,7 @@ export class CheckoutService {
       cardBrand: order.cardBrand,
       cardLast4: order.cardLast4,
       netAmountCents: order.netAmountCents,
+      expiresAt: order.expiresAt,
       createdAt: order.createdAt,
     };
   }

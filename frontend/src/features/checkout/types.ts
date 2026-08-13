@@ -38,6 +38,7 @@ export type PixCharge = {
   externalReference: string | null;
   gatewayTransactionId: string | null;
   emv: string | null;
+  expiresAt: string | null;
   createdAt: string;
 };
 
@@ -54,6 +55,7 @@ export type CardCharge = {
   cardBrand: string | null;
   cardLast4: string | null;
   netAmountCents: number | null;
+  expiresAt: string | null;
   createdAt: string;
 };
 

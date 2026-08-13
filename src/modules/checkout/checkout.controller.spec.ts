@@ -17,6 +17,7 @@ describe('CheckoutController', () => {
             createCardPayment: jest.fn(),
             getFees: jest.fn(),
             getOrderById: jest.fn(),
+            cancelOrder: jest.fn(),
           },
         },
       ],

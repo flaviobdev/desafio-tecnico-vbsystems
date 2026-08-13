@@ -22,3 +22,7 @@ export function createCardCharge(payload: CreateCardChargePayload): Promise<Card
 export function getCharge(id: string): Promise<Charge> {
   return apiFetch<Charge>(`/checkout/${id}`);
 }
+
+export function cancelCharge(id: string): Promise<Charge> {
+  return apiFetch<Charge>(`/checkout/${id}/cancel`, { method: 'POST' });
+}
