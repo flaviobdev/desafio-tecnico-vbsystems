@@ -7,11 +7,16 @@ import { Button } from '../../components/Button';
 import { Card } from '../../components/Card';
 import { ErrorBanner } from '../../components/ErrorBanner';
 import { ApiError } from '../../lib/api-client';
+import { cleanDocument, isValidDocumentValue, maskDocument } from '../../lib/document';
 import { useAuth } from './AuthContext';
 import './login.css';
 
 const schema = z.object({
-  document: z.string().min(1, 'Informe o CPF ou CNPJ.'),
+  document: z
+    .string()
+    .min(1, 'Informe o CPF ou CNPJ.')
+    .refine(isValidDocumentValue, 'CPF ou CNPJ inválido.')
+    .transform(cleanDocument),
   password: z.string().min(1, 'Informe a senha.'),
 });
 
@@ -26,6 +31,7 @@ export function LoginPage() {
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({ resolver: zodResolver(schema) });
+  const documentField = register('document');
 
   async function onSubmit(values: FormValues) {
     setServerError(null);
@@ -49,7 +55,15 @@ export function LoginPage() {
         <form onSubmit={handleSubmit(onSubmit)} noValidate>
           <div className="ui-field">
             <label htmlFor="document">CPF ou CNPJ</label>
-            <input id="document" autoComplete="username" {...register('document')} />
+            <input
+              id="document"
+              autoComplete="username"
+              {...documentField}
+              onChange={(e) => {
+                e.target.value = maskDocument(e.target.value);
+                void documentField.onChange(e);
+              }}
+            />
             {errors.document && <span className="ui-field-error">{errors.document.message}</span>}
           </div>
 

@@ -8,6 +8,7 @@ import { ErrorBanner } from '../../components/ErrorBanner';
 import { StatusStamp } from '../../components/StatusStamp';
 import { useAuth } from '../auth/AuthContext';
 import { ApiError } from '../../lib/api-client';
+import { cleanDocument, isValidDocumentValue, maskDocument } from '../../lib/document';
 import { centsToBRL, reaisToCents } from '../../lib/money';
 import { createWithdrawal, getWithdrawal } from './api';
 import { Withdrawal } from './types';
@@ -16,7 +17,11 @@ import './withdrawals.css';
 const schema = z.object({
   amount: z.coerce.number().positive('Informe um valor maior que zero.'),
   pixKey: z.string().min(1, 'Informe a chave Pix de destino.'),
-  document: z.string().min(1, 'Informe o CPF do titular da chave Pix.'),
+  document: z
+    .string()
+    .min(1, 'Informe o CPF do titular da chave Pix.')
+    .refine(isValidDocumentValue, 'CPF ou CNPJ inválido.')
+    .transform(cleanDocument),
   description: z.string().optional(),
   externalReference: z.string().optional(),
 });
@@ -35,8 +40,9 @@ export function WithdrawalsPage() {
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
-    defaultValues: { document: user?.document ?? '' },
+    defaultValues: { document: maskDocument(user?.document ?? '') },
   });
+  const documentField = register('document');
 
   async function onSubmit(values: FormValues) {
     setSubmitError(null);
@@ -49,7 +55,7 @@ export function WithdrawalsPage() {
         externalReference: values.externalReference || undefined,
       });
       setResult(created);
-      reset({ document: values.document });
+      reset({ document: maskDocument(values.document) });
     } catch (err) {
       setSubmitError(err instanceof ApiError ? err.message : 'Não foi possível solicitar o saque.');
     }
@@ -82,7 +88,14 @@ export function WithdrawalsPage() {
           </div>
           <div className="ui-field">
             <label htmlFor="document">CPF do titular da chave Pix</label>
-            <input id="document" {...register('document')} />
+            <input
+              id="document"
+              {...documentField}
+              onChange={(e) => {
+                e.target.value = maskDocument(e.target.value);
+                void documentField.onChange(e);
+              }}
+            />
             {errors.document && <span className="ui-field-error">{errors.document.message}</span>}
           </div>
           <div className="ui-field">

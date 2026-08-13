@@ -10,6 +10,7 @@ import { ErrorBanner } from '../../components/ErrorBanner';
 import { Spinner } from '../../components/Spinner';
 import { StatusStamp } from '../../components/StatusStamp';
 import { ApiError } from '../../lib/api-client';
+import { cleanDocument, isValidDocumentValue, maskDocument } from '../../lib/document';
 import { centsToBRL, reaisToCents } from '../../lib/money';
 import { createCardCharge, createPixCharge, getCharge, getFees } from './api';
 import { CardPreview } from './CardPreview';
@@ -20,7 +21,11 @@ import './checkout.css';
 const pixSchema = z.object({
   method: z.literal('PIX'),
   amount: z.coerce.number().positive('Informe um valor maior que zero.'),
-  payerDocument: z.string().min(1, 'Informe o CPF ou CNPJ do pagador.'),
+  payerDocument: z
+    .string()
+    .min(1, 'Informe o CPF ou CNPJ do pagador.')
+    .refine(isValidDocumentValue, 'CPF ou CNPJ inválido.')
+    .transform(cleanDocument),
   description: z.string().optional(),
   externalReference: z.string().optional(),
 });
@@ -69,6 +74,7 @@ export function CheckoutPage() {
   const expiryYear = isCard ? ((watch('expiryYear' as keyof FormValues) as string) ?? '') : '';
   const cvv = isCard ? ((watch('cvv' as keyof FormValues) as string) ?? '') : '';
   const cvvField = register('cvv');
+  const payerDocumentField = register('payerDocument');
   const brand = isCard ? detectCardBrand(cardNumber.replace(/\D/g, '')) : null;
 
   useEffect(() => {
@@ -161,7 +167,14 @@ export function CheckoutPage() {
           {method === 'PIX' && (
             <div className="ui-field">
               <label htmlFor="payerDocument">CPF ou CNPJ do pagador</label>
-              <input id="payerDocument" {...register('payerDocument')} />
+              <input
+                id="payerDocument"
+                {...payerDocumentField}
+                onChange={(e) => {
+                  e.target.value = maskDocument(e.target.value);
+                  void payerDocumentField.onChange(e);
+                }}
+              />
               {'payerDocument' in errors && (
                 <span className="ui-field-error">{errors.payerDocument?.message}</span>
               )}
