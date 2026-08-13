@@ -10,9 +10,29 @@ acontece através da API REST do gateway.
 ## Requisitos
 
 - Node.js 22
-- Docker (para o MySQL local)
+- Docker
 
-## Setup local
+## Subir tudo com Docker
+
+`docker compose up -d` sobe os três serviços (MySQL, API e frontend) já
+prontos, sem precisar instalar Node localmente:
+
+```bash
+docker compose up -d --build
+```
+
+- API: `http://localhost:3000/api` (Swagger em `http://localhost:3000/docs`)
+- Frontend: `http://localhost:5173`
+- MySQL: `localhost:3306`
+
+O container da API sobe com `NODE_ENV=development` de propósito — como
+ainda não há migrations, é o `synchronize: true` do TypeORM que cria as
+tabelas, e isso fica desligado em `NODE_ENV=production`. O frontend é
+buildado com `VITE_API_URL` apontando pra API do host (`localhost:3000`
+por padrão); pra apontar pra outro endereço, defina `VITE_API_URL` antes
+do `up` (ele é lido como build arg do serviço `frontend`).
+
+## Setup local (sem Docker para API/frontend)
 
 1. Copie o arquivo de variáveis de ambiente:
 
@@ -22,10 +42,10 @@ acontece através da API REST do gateway.
 
    Os valores padrão já batem com o `docker-compose.yml`.
 
-2. Suba o MySQL local:
+2. Suba só o MySQL:
 
    ```bash
-   docker compose up -d
+   docker compose up -d mysql
    ```
 
    O banco fica disponível em `localhost:3306`.

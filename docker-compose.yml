@@ -18,5 +18,42 @@ services:
       timeout: 5s
       retries: 10
 
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: baas-api
+    restart: unless-stopped
+    ports:
+      - '3000:3000'
+    environment:
+      PORT: 3000
+      # synchronize precisa ficar ligado aqui: não existem migrations ainda (ver README),
+      # então NODE_ENV=production desligaria a criação automática das tabelas.
+      NODE_ENV: development
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_USER: baas_user
+      DB_PASSWORD: baas_password
+      DB_NAME: baas_db
+      JWT_SECRET: ${JWT_SECRET:-change-me}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-1d}
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:3000/api}
+    container_name: baas-frontend
+    restart: unless-stopped
+    ports:
+      - '5173:80'
+    depends_on:
+      - api
+
 volumes:
   mysql_data:
