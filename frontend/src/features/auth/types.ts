@@ -10,3 +10,13 @@ export type LoginResponse = {
     document: string;
   };
 };
+
+export type ResetPasswordPayload = {
+  document: string;
+  email: string;
+};
+
+export type ResetPasswordResponse = {
+  success: boolean;
+  statusCode: number;
+};

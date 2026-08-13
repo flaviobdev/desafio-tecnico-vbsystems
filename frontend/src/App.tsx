@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import { AuthProvider } from './features/auth/AuthContext';
 import { LoginPage } from './features/auth/LoginPage';
 import { ProtectedRoute } from './features/auth/ProtectedRoute';
+import { ResetPasswordPage } from './features/auth/ResetPasswordPage';
 import { CheckoutPage } from './features/checkout/CheckoutPage';
 import { ReceiptPage } from './features/checkout/ReceiptPage';
 import { WalletPage } from './features/wallet/WalletPage';
@@ -14,6 +15,7 @@ export function App() {
     <AuthProvider>
       <Routes>
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/esqueci-senha" element={<ResetPasswordPage />} />
         <Route element={<ProtectedRoute />}>
           <Route path="/checkout/:id/comprovante" element={<ReceiptPage />} />
           <Route element={<AppShell />}>

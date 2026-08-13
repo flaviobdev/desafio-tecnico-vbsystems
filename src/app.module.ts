@@ -17,8 +17,7 @@ import { CorrelationIdMiddleware } from './common/middleware/correlation-id.midd
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
-    // Limite geral por IP; rotas sensíveis (login, cadastro) apertam esse limite
-    // com @Throttle() no próprio controller.
+    // Limite geral por IP com @Throttle()
     ThrottlerModule.forRoot([{ name: 'default', ttl: 60_000, limit: 100 }]),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],

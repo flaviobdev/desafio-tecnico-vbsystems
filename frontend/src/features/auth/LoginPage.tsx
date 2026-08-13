@@ -1,13 +1,17 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 import { Button } from '../../components/Button';
 import { Card } from '../../components/Card';
 import { ErrorBanner } from '../../components/ErrorBanner';
 import { ApiError } from '../../lib/api-client';
-import { cleanDocument, isValidDocumentValue, maskDocument } from '../../lib/document';
+import {
+  cleanDocument,
+  isValidDocumentValue,
+  maskDocument,
+} from '../../lib/document';
 import { useAuth } from './AuthContext';
 import './login.css';
 
@@ -39,7 +43,11 @@ export function LoginPage() {
       await login(values);
       navigate('/', { replace: true });
     } catch (err) {
-      setServerError(err instanceof ApiError ? err.message : 'Não foi possível entrar. Tente novamente.');
+      setServerError(
+        err instanceof ApiError
+          ? err.message
+          : 'Não foi possível entrar. Tente novamente.',
+      );
     }
   }
 
@@ -48,7 +56,9 @@ export function LoginPage() {
       <Card className="login-card">
         <p className="login-eyebrow">VBA · BaaS</p>
         <h1>Entrar no painel</h1>
-        <p className="login-sub">Acompanhe seu saldo, receba pagamentos e solicite saques.</p>
+        <p className="login-sub">
+          Acompanhe seu saldo, receba pagamentos e solicite saques.
+        </p>
 
         {serverError && <ErrorBanner message={serverError} />}
 
@@ -64,19 +74,39 @@ export function LoginPage() {
                 void documentField.onChange(e);
               }}
             />
-            {errors.document && <span className="ui-field-error">{errors.document.message}</span>}
+            {errors.document && (
+              <span className="ui-field-error">{errors.document.message}</span>
+            )}
           </div>
 
           <div className="ui-field">
             <label htmlFor="password">Senha</label>
-            <input id="password" type="password" autoComplete="current-password" {...register('password')} />
-            {errors.password && <span className="ui-field-error">{errors.password.message}</span>}
+            <input
+              id="password"
+              type="password"
+              autoComplete="current-password"
+              {...register('password')}
+            />
+            {errors.password && (
+              <span className="ui-field-error">{errors.password.message}</span>
+            )}
           </div>
 
-          <Button type="submit" loading={isSubmitting} style={{ width: '100%' }}>
+          <Button
+            type="submit"
+            loading={isSubmitting}
+            style={{ width: '100%' }}
+          >
             Entrar
           </Button>
         </form>
+
+        <p
+          className="login-sub"
+          style={{ marginTop: 'var(--space-4)', marginBottom: 0 }}
+        >
+          <Link to="/esqueci-senha">Esqueci minha senha</Link>
+        </p>
       </Card>
     </div>
   );
