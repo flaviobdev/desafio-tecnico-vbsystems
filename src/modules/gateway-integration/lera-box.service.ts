@@ -7,6 +7,7 @@ import { LoginGatewayDto } from './dto/login-gateway-dto.dto';
 import { PixGatewayPaymentsDto } from './dto/create-pix-payments-gateway.dto';
 import { CardGatewayPaymentsDto } from './dto/create-card-payments-gateway.dto';
 import { CreateWithdrawGatewayDto } from './dto/create-withdraw-gateway.dto';
+import { CreateWebhookGatewayDto } from './dto/create-webhook-gateway.dto';
 import { toGatewayException } from '../../common/errors/gateway-error.util';
 
 @Injectable()
@@ -251,6 +252,69 @@ export class LeraBoxService {
     }
   }
 
+  async upsertWebhook(
+    token: string,
+    data: CreateWebhookGatewayDto,
+  ): Promise<GatewayWebhook> {
+    try {
+      const response = await firstValueFrom(
+        this.http.post<GatewayWebhook>(`${this.baseUrl}/webhooks`, data, {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+      );
+
+      return response.data;
+    } catch (error) {
+      const err = error as AxiosError;
+      this.logger.error(
+        `Falha ao cadastrar webhook no gateway: ${err.response?.status} ${JSON.stringify(err.response?.data)}`,
+      );
+      throw toGatewayException(
+        error,
+        'Não foi possível cadastrar o webhook no gateway',
+      );
+    }
+  }
+
+  async listWebhooks(token: string): Promise<GatewayWebhook[]> {
+    try {
+      const response = await firstValueFrom(
+        this.http.get<GatewayWebhook[]>(`${this.baseUrl}/webhooks`, {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+      );
+
+      return response.data;
+    } catch (error) {
+      const err = error as AxiosError;
+      this.logger.error(
+        `Falha ao listar webhooks no gateway: ${err.response?.status} ${JSON.stringify(err.response?.data)}`,
+      );
+      throw toGatewayException(
+        error,
+        'Não foi possível listar os webhooks no gateway',
+      );
+    }
+  }
+
+  async removeWebhook(token: string, id: string): Promise<void> {
+    try {
+      await firstValueFrom(
+        this.http.delete(`${this.baseUrl}/webhooks/${id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+      );
+    } catch (error) {
+      const err = error as AxiosError;
+      this.logger.error(
+        `Falha ao remover webhook no gateway: ${err.response?.status} ${JSON.stringify(err.response?.data)}`,
+      );
+      throw toGatewayException(
+        error,
+        'Não foi possível remover o webhook no gateway',
+      );
+    }
+  }
 }
 
 export type GatewayWallet = {
@@ -319,5 +383,13 @@ export type GatewayWithdrawal = {
   document: string;
   description: string | null;
   externalReference: string | null;
+  createdAt: string;
+};
+
+export type GatewayWebhook = {
+  id: string;
+  event: string;
+  url: string;
+  active: boolean;
   createdAt: string;
 };
