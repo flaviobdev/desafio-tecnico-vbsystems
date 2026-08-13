@@ -1,14 +1,22 @@
-import { TransactionStatus } from '../../components/StatusStamp';
+export type WithdrawalStatus = 'PENDING' | 'APPROVED' | 'DENIED';
 
 export type Withdrawal = {
   id: string;
-  amountCents: number;
+  amount: number;
   pixKey: string;
-  status: TransactionStatus;
-  requestedAt: string;
+  document: string;
+  description: string | null;
+  externalReference: string | null;
+  status: WithdrawalStatus;
+  denialReason: string | null;
+  gatewayTransactionId: string | null;
+  createdAt: string;
 };
 
 export type CreateWithdrawalPayload = {
-  amountCents: number;
+  amount: number;
   pixKey: string;
+  document: string;
+  description?: string;
+  externalReference?: string;
 };

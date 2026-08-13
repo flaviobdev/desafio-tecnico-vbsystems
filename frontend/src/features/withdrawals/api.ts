@@ -1,10 +1,6 @@
 import { apiFetch } from '../../lib/api-client';
 import { CreateWithdrawalPayload, Withdrawal } from './types';
 
-export function listWithdrawals(): Promise<Withdrawal[]> {
-  return apiFetch<Withdrawal[]>('/withdrawals');
-}
-
 export function createWithdrawal(payload: CreateWithdrawalPayload): Promise<Withdrawal> {
   return apiFetch<Withdrawal>('/withdrawals', {
     method: 'POST',
