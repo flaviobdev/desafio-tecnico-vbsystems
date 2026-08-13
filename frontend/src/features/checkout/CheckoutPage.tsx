@@ -12,6 +12,7 @@ import { StatusStamp } from '../../components/StatusStamp';
 import { ApiError } from '../../lib/api-client';
 import { cleanDocument, isValidDocumentValue, maskDocument } from '../../lib/document';
 import { centsToBRL, reaisToCents } from '../../lib/money';
+import { mailtoUrl, whatsAppShareUrl } from '../../lib/share';
 import { cancelCharge, createCardCharge, createPixCharge, getCharge, getFees } from './api';
 import { CardPreview } from './CardPreview';
 import { detectCardBrand } from './card-brand';
@@ -322,7 +323,7 @@ export function CheckoutPage() {
               <div className="checkout-share-row">
                 <a
                   className="ui-btn ui-btn--secondary"
-                  href={`https://wa.me/?text=${encodeURIComponent(buildPixShareMessage(charge))}`}
+                  href={whatsAppShareUrl(buildPixShareMessage(charge))}
                   target="_blank"
                   rel="noreferrer"
                 >
@@ -330,7 +331,7 @@ export function CheckoutPage() {
                 </a>
                 <a
                   className="ui-btn ui-btn--secondary"
-                  href={`mailto:?subject=${encodeURIComponent('Pagamento Pix')}&body=${encodeURIComponent(buildPixShareMessage(charge))}`}
+                  href={mailtoUrl('Pagamento Pix', buildPixShareMessage(charge))}
                 >
                   Enviar por e-mail
                 </a>

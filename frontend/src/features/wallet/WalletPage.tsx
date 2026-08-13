@@ -7,6 +7,7 @@ import { Spinner } from '../../components/Spinner';
 import { StatusStamp, TransactionStatus } from '../../components/StatusStamp';
 import { useAsync } from '../../hooks/useAsync';
 import { centsToBRL } from '../../lib/money';
+import { mailtoUrl, whatsAppShareUrl } from '../../lib/share';
 import { getBalance, getTransactions } from './api';
 import { TransactionFilters, TransactionType } from './types';
 import './wallet.css';
@@ -41,6 +42,11 @@ export function WalletPage() {
   function updateFilters(next: Partial<TransactionFilters>) {
     setFilters((f) => ({ ...f, ...next }));
     setPage(1);
+  }
+
+  function buildReceiptShareMessage(orderId: string, type: TransactionType, amountCents: number) {
+    const receiptUrl = `${window.location.origin}/checkout/${orderId}/comprovante`;
+    return `Comprovante de pagamento — ${TYPE_LABEL[type]} de ${centsToBRL(amountCents)}\n${receiptUrl}`;
   }
 
   return (
@@ -106,9 +112,26 @@ export function WalletPage() {
                   <td className="ledger-table-amount money">{centsToBRL(tx.amountCents)}</td>
                   <td>
                     {tx.orderId && tx.status === 'APPROVED' && (
-                      <Link to={`/checkout/${tx.orderId}/comprovante`} target="_blank">
-                        Comprovante
-                      </Link>
+                      <div className="wallet-row-actions">
+                        <Link to={`/checkout/${tx.orderId}/comprovante`} target="_blank">
+                          Comprovante
+                        </Link>
+                        <a
+                          href={whatsAppShareUrl(buildReceiptShareMessage(tx.orderId, tx.type, tx.amountCents))}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          WhatsApp
+                        </a>
+                        <a
+                          href={mailtoUrl(
+                            'Comprovante de pagamento',
+                            buildReceiptShareMessage(tx.orderId, tx.type, tx.amountCents),
+                          )}
+                        >
+                          E-mail
+                        </a>
+                      </div>
                     )}
                   </td>
                 </tr>
