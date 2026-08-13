@@ -6,15 +6,15 @@ import { firstValueFrom } from 'rxjs';
 import { LoginGatewayDto } from './dto/login-gateway-dto.dto';
 import { PixGatewayPaymentsDto } from './dto/create-pix-payments-gateway.dto';
 import { CardGatewayPaymentsDto } from './dto/create-card-payments-gateway.dto';
+import { CreateWithdrawGatewayDto } from './dto/create-withdraw-gateway.dto';
 import { toGatewayException } from '../../common/errors/gateway-error.util';
-
 
 @Injectable()
 export class LeraBoxService {
   private readonly logger = new Logger(LeraBoxService.name);
   private readonly baseUrl = 'https://api.branchpay.com.br/api';
 
-  constructor(private readonly http: HttpService) { }
+  constructor(private readonly http: HttpService) {}
 
   async createUser(data: CreateGatewayUserDto) {
     try {
@@ -28,7 +28,10 @@ export class LeraBoxService {
       this.logger.error(
         `Falha ao criar usuário no gateway: ${err.response?.status} ${JSON.stringify(err.response?.data)}`,
       );
-      throw toGatewayException(error, 'Não foi possível cadastrar o usuário no gateway');
+      throw toGatewayException(
+        error,
+        'Não foi possível cadastrar o usuário no gateway',
+      );
     }
   }
 
@@ -44,7 +47,10 @@ export class LeraBoxService {
       this.logger.error(
         `Falha ao logar usuário no gateway: ${err.response?.status} ${JSON.stringify(err.response?.data)}`,
       );
-      throw toGatewayException(error, 'Não foi possível logar o usuário no gateway');
+      throw toGatewayException(
+        error,
+        'Não foi possível logar o usuário no gateway',
+      );
     }
   }
 
@@ -62,7 +68,10 @@ export class LeraBoxService {
       this.logger.error(
         `Falha ao consultar wallet no gateway: ${err.response?.status} ${JSON.stringify(err.response?.data)}`,
       );
-      throw toGatewayException(error, 'Não foi possível consultar a carteira no gateway');
+      throw toGatewayException(
+        error,
+        'Não foi possível consultar a carteira no gateway',
+      );
     }
   }
 
@@ -72,10 +81,13 @@ export class LeraBoxService {
   ): Promise<GatewayTransactionsResponse> {
     try {
       const response = await firstValueFrom(
-        this.http.get<GatewayTransactionsResponse>(`${this.baseUrl}/wallet/transactions`, {
-          headers: { Authorization: `Bearer ${token}` },
-          params,
-        }),
+        this.http.get<GatewayTransactionsResponse>(
+          `${this.baseUrl}/wallet/transactions`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+            params,
+          },
+        ),
       );
 
       return response.data;
@@ -84,7 +96,10 @@ export class LeraBoxService {
       this.logger.error(
         `Falha ao consultar extrato no gateway: ${err.response?.status} ${JSON.stringify(err.response?.data)}`,
       );
-      throw toGatewayException(error, 'Não foi possível consultar o extrato de transações no gateway');
+      throw toGatewayException(
+        error,
+        'Não foi possível consultar o extrato de transações no gateway',
+      );
     }
   }
 
@@ -102,7 +117,10 @@ export class LeraBoxService {
       this.logger.error(
         `Falha ao criar pagamento PIX no gateway: ${err.response?.status} ${JSON.stringify(err.response?.data)}`,
       );
-      throw toGatewayException(error, 'Não foi possível realizar o pagamento PIX no gateway');
+      throw toGatewayException(
+        error,
+        'Não foi possível realizar o pagamento PIX no gateway',
+      );
     }
   }
 
@@ -120,16 +138,26 @@ export class LeraBoxService {
       this.logger.error(
         `Falha ao consultar taxas no gateway: ${err.response?.status} ${JSON.stringify(err.response?.data)}`,
       );
-      throw toGatewayException(error, 'Não foi possível consultar as taxas no gateway');
+      throw toGatewayException(
+        error,
+        'Não foi possível consultar as taxas no gateway',
+      );
     }
   }
 
-  async createCardPayment(token: string, data: CardGatewayPaymentsDto): Promise<GatewayCardPaymentResponse> {
+  async createCardPayment(
+    token: string,
+    data: CardGatewayPaymentsDto,
+  ): Promise<GatewayCardPaymentResponse> {
     try {
       const response = await firstValueFrom(
-        this.http.post<GatewayCardPaymentResponse>(`${this.baseUrl}/payments/card`, data, {
-          headers: { Authorization: `Bearer ${token}` },
-        }),
+        this.http.post<GatewayCardPaymentResponse>(
+          `${this.baseUrl}/payments/card`,
+          data,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        ),
       );
 
       return response.data;
@@ -138,16 +166,25 @@ export class LeraBoxService {
       this.logger.error(
         `Falha ao criar pagamento com cartão no gateway: ${err.response?.status} ${JSON.stringify(err.response?.data)}`,
       );
-      throw toGatewayException(error, 'Não foi possível realizar o pagamento com cartão no gateway');
+      throw toGatewayException(
+        error,
+        'Não foi possível realizar o pagamento com cartão no gateway',
+      );
     }
   }
 
-  async getPaymentById(token: string, gatewayTransactionId: string): Promise<GatewayTransaction> {
+  async getPaymentById(
+    token: string,
+    gatewayTransactionId: string,
+  ): Promise<GatewayTransaction> {
     try {
       const response = await firstValueFrom(
-        this.http.get<GatewayTransaction>(`${this.baseUrl}/payments/${gatewayTransactionId}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        }),
+        this.http.get<GatewayTransaction>(
+          `${this.baseUrl}/payments/${gatewayTransactionId}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        ),
       );
 
       return response.data;
@@ -156,9 +193,64 @@ export class LeraBoxService {
       this.logger.error(
         `Falha ao consultar pagamento no gateway: ${err.response?.status} ${JSON.stringify(err.response?.data)}`,
       );
-      throw toGatewayException(error, 'Não foi possível consultar o pagamento no gateway');
+      throw toGatewayException(
+        error,
+        'Não foi possível consultar o pagamento no gateway',
+      );
     }
   }
+
+  async createWithdrawal(
+    token: string,
+    data: CreateWithdrawGatewayDto,
+  ): Promise<GatewayWithdrawal> {
+    try {
+      const response = await firstValueFrom(
+        this.http.post<GatewayWithdrawal>(`${this.baseUrl}/withdrawals`, data, {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+      );
+
+      return response.data;
+    } catch (error) {
+      const err = error as AxiosError;
+      this.logger.error(
+        `Falha ao solicitar saque no gateway: ${err.response?.status} ${JSON.stringify(err.response?.data)}`,
+      );
+      throw toGatewayException(
+        error,
+        'Não foi possível solicitar o saque no gateway',
+      );
+    }
+  }
+
+  async getWithdrawalById(
+    token: string,
+    gatewayTransactionId: string,
+  ): Promise<GatewayWithdrawal> {
+    try {
+      const response = await firstValueFrom(
+        this.http.get<GatewayWithdrawal>(
+          `${this.baseUrl}/withdrawals/${gatewayTransactionId}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        ),
+      );
+
+      return response.data;
+    } catch (error) {
+      const err = error as AxiosError;
+      this.logger.error(
+        `Falha ao consultar saque no gateway: ${err.response?.status} ${JSON.stringify(err.response?.data)}`,
+      );
+      throw toGatewayException(
+        error,
+        'Não foi possível consultar o saque no gateway',
+      );
+    }
+  }
+
 }
 
 export type GatewayWallet = {
@@ -216,4 +308,16 @@ export type GatewayCardPaymentResponse = {
     feePercent: number;
     netAmountCents: number;
   };
+};
+
+export type GatewayWithdrawal = {
+  id: string;
+  status: string;
+  denialReason: string | null;
+  amount: number;
+  pixKey: string;
+  document: string;
+  description: string | null;
+  externalReference: string | null;
+  createdAt: string;
 };
