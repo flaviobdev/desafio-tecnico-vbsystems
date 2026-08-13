@@ -6,6 +6,7 @@ import { z } from 'zod';
 import { Button } from '../../components/Button';
 import { Card } from '../../components/Card';
 import { ErrorBanner } from '../../components/ErrorBanner';
+import { SuccessBanner } from '../../components/SuccessBanner';
 import { ApiError } from '../../lib/api-client';
 import {
   cleanDocument,
@@ -65,10 +66,7 @@ export function ResetPasswordPage() {
 
         {sent ? (
           <>
-            <p className="login-sub">
-              Se os dados coincidirem com um cadastro existente, a nova senha já
-              foi enviada. Confira sua caixa de entrada.
-            </p>
+            <SuccessBanner message="Nova senha enviada! Confira seu e-mail." />
             <Link to="/login">&larr; Voltar para o login</Link>
           </>
         ) : (

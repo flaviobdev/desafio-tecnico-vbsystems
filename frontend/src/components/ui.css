@@ -86,6 +86,16 @@
   margin-bottom: var(--space-4);
 }
 
+.ui-success-banner {
+  border: 1px solid var(--color-pix-ink);
+  color: var(--color-pix-ink);
+  background: color-mix(in srgb, var(--color-pix) 10%, var(--color-surface));
+  border-radius: var(--radius);
+  padding: var(--space-3) var(--space-4);
+  font-size: 14px;
+  margin-bottom: var(--space-4);
+}
+
 .ui-spinner {
   width: 18px;
   height: 18px;
